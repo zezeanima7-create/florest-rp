@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Floresta RP</title>
+<style>
+:root{color-scheme:dark;--bg:#101a15;--panel:#1b2a20;--line:#38523e;--text:#e8f1e7;--muted:#a8b9a7;--accent:#8bcf83}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#29432e,#101a15 65%);color:var(--text);font:16px system-ui,sans-serif;min-height:100vh}
+main{max-width:1000px;margin:auto;padding:20px}.hero{padding:24px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(120deg,#233b29dd,#142219ee);margin-bottom:16px}
+h1{margin:0;font-size:clamp(28px,6vw,44px)}p{color:var(--muted);line-height:1.5}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:12px}.panel{background:#1b2a20ed;border:1px solid var(--line);border-radius:14px;padding:16px}.stat{display:flex;justify-content:space-between;gap:10px;margin:9px 0}.bar{height:12px;background:#344438;border-radius:99px;overflow:hidden}.bar span{display:block;height:100%;background:#70c77b;width:100%;transition:width .2s}
+button{background:#315d39;color:white;border:1px solid #57875e;border-radius:10px;padding:10px 12px;font:inherit;cursor:pointer;margin:4px 3px 4px 0}button:hover{background:#407649}button:disabled{opacity:.4;cursor:not-allowed}.muted{color:var(--muted);font-size:14px}.scene{font-size:40px;letter-spacing:5px;text-align:center;padding:20px 8px;background:linear-gradient(#263e2b,#17251a);border-radius:12px;margin:12px 0}.log{height:170px;overflow:auto;background:#111b14;border-radius:10px;padding:10px;font-size:14px}.item{display:flex;justify-content:space-between;border-bottom:1px solid #344638;padding:6px 0}.tag{display:inline-block;background:#344b37;border-radius:20px;padding:4px 9px;font-size:12px;margin:3px}.danger{color:#ffbf83}footer{color:var(--muted);font-size:12px;text-align:center;margin:20px}
+</style></head>
+<body><main>
+<section class="hero"><span class="tag">RPG DE SOBREVIVÊNCIA</span><span class="tag">CICLO: 6 MIN</span><h1>🌲 FLORESTA RP</h1><p>Uma floresta densa, casas esquecidas e noites perigosas. Explore, recolha recursos, construa um abrigo e mantenha a luz acesa. Protótipo local: o progresso fica neste navegador.</p></section>
+<div class="grid">
+<section class="panel"><h2>🧍 Personagem</h2><div class="stat"><b>❤️ HP</b><b id="hpText">100 / 100</b></div><div class="bar"><span id="hpBar"></span></div><div class="stat"><span>📍 Local</span><b id="place">Clareira inicial</b></div><div class="stat"><span>🕰️ Período</span><b id="period">☀️ Dia</b></div><div class="stat"><span>⏳ Próxima mudança</span><b id="countdown">02:00</b></div><div class="stat"><span>👥 Clã</span><b id="clan">Sem clã</b></div></section>
+<section class="panel"><h2>🌳 Exploração</h2><div class="scene" id="scene">🌲 🌳 🌲<br>🍃 🏚️ 🍃<br>🌲 🌿 🌲</div><button id="search">🔎 Vasculhar clareira</button><button id="tree">🪓 Cortar árvore</button><button id="house">🏚️ Explorar casa</button><button id="move">🧭 Adentrar a floresta</button><p class="muted">O machado de graveto não perde durabilidade, mas demora para derrubar árvores.</p></section>
+<section class="panel"><h2>🎒 Inventário</h2><div id="inventory"></div><p class="muted">Ferramentas iniciais: machado de graveto e martelo simples.</p></section>
+<section class="panel"><h2>🔥 Construção e luz</h2><p>Use o martelo para montar estruturas com os recursos coletados.</p><button id="campfire">🔥 Fazer fogueira (4 madeira + 2 pedra)</button><button id="torch">🕯️ Fazer tocha (1 madeira + 2 folhas)</button><button id="shelter">🏕️ Fazer abrigo (8 madeira + 5 folhas)</button><button id="feedFire">🪵 Alimentar fogueira (+1 madeira)</button><div class="stat"><span>Fogueira</span><b id="fireState">Não construída</b></div><div class="stat"><span>Tocha</span><b id="torchState">Apagada</b></div><div class="stat"><span>Abrigo</span><b id="shelterState">Não construído</b></div></section>
+<section class="panel"><h2>👁️ Perigos da floresta</h2><div class="scene" style="font-size:34px">🦌 🌫️ 🌲</div><p id="threat">A mata está quieta. Você ouve folhas se mexendo ao longe.</p><p class="muted">O Veado teme a luz. Uma fogueira acesa ou tocha ativa ajuda a manter a criatura afastada. Outros jogadores não podem ser eliminados neste RPG.</p><button id="lightTorch">Acender / apagar tocha</button></section>
+<section class="panel"><h2>👥 Clãs (protótipo)</h2><p class="muted">Crie um nome para seu grupo ou entre no clã de exemplo.</p><input id="clanName" maxlength="20" placeholder="Nome do clã" style="width:100%;padding:10px;border-radius:8px;background:#111b14;border:1px solid #49634e;color:white"><button id="createClan">Criar clã</button><button id="joinClan">Entrar em Exploradores</button></section>
+</div>
+<section class="panel" style="margin-top:12px"><h2>📜 Diário</h2><div class="log" id="log" aria-live="polite"></div></section>
+<footer>Floresta RP · Protótipo de jogo · O relógio do ciclo usa tempo real enquanto esta página estiver aberta.</footer>
+</main>
+<script>
+const state={hp:100,wood:0,stone:0,leaves:0,clan:"Sem clã",place:"Clareira inicial",fire:false,fireFuel:0,torch:false,shelter:false,periodIndex:0,remaining:120,treeBusy:false};
+const periods=[{name:"☀️ Dia",duration:120},{name:"🌅 Tarde",duration:60},{name:"🌙 Noite",duration:180}];
+const $=id=>document.getElementById(id);
+function log(t){const el=$("log");el.innerHTML="<div>• "+t+"</div>"+el.innerHTML}
+function render(){ $("hpText").textContent=state.hp+" / 100";$("hpBar").style.width=state.hp+"%";$("place").textContent=state.place;$("period").textContent=periods[state.periodIndex].name;$("countdown").textContent=String(Math.floor(state.remaining/60)).padStart(2,"0")+":"+String(state.remaining%60).padStart(2,"0");$("clan").textContent=state.clan;
+$("inventory").innerHTML=[["🪵 Madeira",state.wood],["🪨 Pedra",state.stone],["🍃 Folhas",state.leaves],["🪓 Machado de graveto","Equipado"],["🔨 Martelo simples","Equipado"],["🕯️ Tochas",state.torch?1:0]].map(x=>'<div class="item"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join("");
+$("fireState").textContent=state.fire?(state.fireFuel>0?"Acesa · combustível "+state.fireFuel:"Apagada · sem combustível"):"Não construída";$("torchState").textContent=state.torch?"Na mão":"Guardada";$("shelterState").textContent=state.shelter?"Construído":"Não construído";
+}
+function spend(k,n){if(state[k]<n){log("Recursos insuficientes.");return false}state[k]-=n;return true}
+$("search").onclick=()=>{const r=Math.random();if(r<.4){state.leaves+=2;log("Você encontrou 2 folhas.");}else if(r<.7){state.stone+=1;log("Você encontrou uma pedra.");}else{state.wood+=1;log("Você encontrou um graveto aproveitável.");}render()};
+$("tree").onclick=()=>{if(state.treeBusy)return;state.treeBusy=true;$("tree").disabled=true;log("Você começa a cortar lentamente com o machado de graveto...");setTimeout(()=>{state.wood+=3;state.treeBusy=false;$("tree").disabled=false;log("Árvore derrubada. +3 madeira.");render()},7000)};
+$("house").onclick=()=>{state.place="Casa abandonada";const n=Math.floor(Math.random()*3)+1;state.wood+=n;state.stone+=Math.random()<.5?1:0;log("Você vasculhou a casa e encontrou "+n+" madeira"+(n>1?"s":"")+".");$("scene").innerHTML="🌿 🏚️ 🕸️<br>🪟 🚪 📦<br>🌲 🍂 🌲";render()};
+$("move").onclick=()=>{state.place="Trilha profunda";$("scene").innerHTML="🌲 🌲 🌲<br>🌫️ 🦌 🌿<br>🌲 🍃 🌲";log("Você avançou pela mata. Os sons da floresta ficaram mais próximos.");if(state.periodIndex===2&&!state.fire&&!state.torch){state.hp=Math.max(0,state.hp-8);log("Algo se aproximou no escuro. Você perdeu 8 HP.");}render()};
+$("campfire").onclick=()=>{if(state.fire){log("Você já construiu uma fogueira.");return}if(spend("wood",4)&&spend("stone",2)){state.fire=true;state.fireFuel=3;log("Fogueira construída! Ela ilumina a área e afasta o Veado enquanto houver combustível.");render()}};
+$("torch").onclick=()=>{if(state.torch){log("Você já tem uma tocha.");return}if(spend("wood",1)&&spend("leaves",2)){state.torch=true;log("Tocha fabricada.");render()}};
+$("shelter").onclick=()=>{if(state.shelter){log("Você já tem um abrigo.");return}if(spend("wood",8)&&spend("leaves",5)){state.shelter=true;log("Abrigo construído. Você tem um lugar seguro para se recolher.");render()}};
+$("feedFire").onclick=()=>{if(!state.fire){log("Construa uma fogueira primeiro.");return}if(spend("wood",1)){state.fireFuel+=2;log("Você colocou lenha na fogueira.");render()}};
+$("lightTorch").onclick=()=>{if(!state.torch){log("Você ainda não fabricou uma tocha.");return}state.torch=!state.torch;log(state.torch?"Você acendeu a tocha.":"Você apagou a tocha.");render()};
+$("createClan").onclick=()=>{const n=$("clanName").value.trim();if(!n){log("Digite um nome para o clã.");return}state.clan=n;log("Você criou o clã "+n+".");render()};
+$("joinClan").onclick=()=>{state.clan="Exploradores";log("Você entrou no clã Exploradores (grupo de demonstração).");render()};
+setInterval(()=>{state.remaining--;if(state.remaining<=0){state.periodIndex=(state.periodIndex+1)%3;state.remaining=periods[state.periodIndex].duration;log("O período mudou: "+periods[state.periodIndex].name+".");if(state.periodIndex===2){log("A noite chegou. Procure uma fonte de luz.");if(!state.fire&&!state.torch){state.hp=Math.max(0,state.hp-5);log("A escuridão trouxe perigo. -5 HP.");}}}if(state.fire&&state.fireFuel>0){state.fireFuel--;if(state.fireFuel===0)log("A fogueira apagou: acabou a lenha.");}if(state.hp===0){log("Você ficou sem HP. O protótipo encerrou sua exploração; recarregue a página para reiniciar.");}render()},1000);
+log("Você chegou à Clareira inicial. Recolha recursos antes do anoitecer.");render();
+</script></body></html>
